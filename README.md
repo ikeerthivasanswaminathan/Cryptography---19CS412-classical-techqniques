@@ -1,104 +1,82 @@
 ## Cryptography---19CS412-classical-techqniques
 
-## Exp 4 - Vigenere Cipher using with different key values
+## Exp 5 - Rail Fence Cipher using with different key values
 
 ## AIM:
 
-To develop a simple C program to implement Vigenere Cipher.
+To develop a simple C program to implement Rail Fence Cipher.
 
-## ALGORITHM :
+## ALGORRITHM :
 
-Step 1 : Arrange the alphabets in row and column of a 26*26 matrix
+Step 1 : Read the Plain text.
 
-Step 2 : Circulate the alphabets in each row to position left such that the first letter is attached to last.
+Step 2 : Arrange the plain text in row columnar matrix format
 
-Step 3 : Repeat this process for all 26 rows and construct the final key matrix.
+Step 3 : Now read the keyword depending on the number of columns of the plain text
 
-Step 4 : The keyword and the plain text is read from the user.
+Step 4 : Arrange the characters of the keyword in sorted order and the corresponding columns of the plain text.
 
-Step 5 : The characters in the keyword are repeated sequentially so as to match with that of the plain text.
-
-Step 6 : Pick the first letter of the plain text and that of the keyword as the row indices and column indices respectively.
-
-Step 7 : The junction character where these two meet forms the cipher character
-
-Step 8 : Repeat the above steps to generate the entire cipher text.
+Step 5 : Read the characters row wise or column wise in the former order to get the
 
 ## PROGRAM:
 
-```
-#include <stdio.h>
+```#include<stdio.h>
 #include<conio.h>
-#include <ctype.h>
-#include <string.h>
-void encipher();
-void decipher();
+#include<string.h>
+
 int main()
 {
-    int choice;
-    while(1)
+    int i,j,k,l;
+    char a[20],c[20],d[20];
+    printf("\n\t\t RAIL FENCE TECHNIQUE");
+    printf("\n\nEnter the input string : ");
+    gets(a);
+    l=strlen(a);
+    
+    //Ciphering
+    for(i=0,j=0;i<l;i++)
     {
-        printf("\n\n1. Encrypt Text");
-        printf("\n2. Decrypt Text");
-        printf("\n3. Exit");
-        printf("\n\nEnter Your Choice : ");
-        scanf("%d",&choice);
-        if(choice == 3)
-        exit(0);
-        else if(choice == 1)
-        encipher();
-        else if(choice == 2)
-        decipher();
-        else
-        printf("Please Enter Valid Option.");
+        if(i%2==0)
+        c[j++]=a[i];
     }
-}
-void encipher()
-{
-    unsigned int i,j;
-    char input[50],key[10];
-    printf("\nEnter Plain Text: ");
-    scanf("%s",input);
-    printf("\nEnter Key Value: ");
-    scanf("%s",key);
-    printf("\nResultant Cipher Text: ");
-    for(i=0,j=0;i<strlen(input);i++,j++)
+    for(i=0;i<l;i++)
     {
-        if(j>=strlen(key)){ j=0;
+        if(i%2==1)
+        c[j++]=a[i];
     }
-    printf("%c",65+(((toupper(input[i])-65)+(toupper(key[j])-65))%26));
-    }
-}
-void decipher()
-{
-    unsigned int i,j;
-    char input[50],key[10];
-    int value;
-    printf("\nEnter Cipher Text: ");
-    scanf("%s",input);
-    printf("\nEnter the key value: ");
-    scanf("%s",key);
-    printf("\n");
-    for(i=0,j=0;i<strlen(input);i++,j++)
+    c[j]='\0';
+    printf("\nCipher text after applying rail fence : ");
+    printf("%s",c);
+
+    //Deciphering
+    if(l%2==0)
     {
-        if(j>=strlen(key)){ j=0; 
+        k=l/2;
     }
-    value = (toupper(input[i])-64)-(toupper(key[j])-64);
-    if( value < 0)
-    { 
-        value = value * -1;
+    else
+    {
+        k=(l/2)+1;
     }
-    printf("%c",65 + (value % 26));
+    for(i=0,j=0;i<k;i++)
+    {
+        d[j]=c[i];
+        j=j+2;
     }
+    for(i=k,j=1;i<l;i++)
+    {
+        d[j]=c[i];
+        j=j+2;
+    }
+    d[l]='\0';
+    printf("\n\nText after decryption : ");
+    printf("%s",d);
     return 0;
 }
 ```
 
 ## OUTPUT:
 
-Simulating Vigenere Cipher
-
-![exp4output](https://github.com/user-attachments/assets/89944c78-ad64-48db-b5f7-5dd04e94927d)
+![exp5output](https://github.com/user-attachments/assets/3e50f772-354f-459f-8e6e-fe9a2878cc0c)
 
 ## RESULT:
-The program for Vigenere Cipher is executed successfully.
+The program for Rail Fence Cipher is executed successfully.
