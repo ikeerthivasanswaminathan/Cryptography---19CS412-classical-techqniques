@@ -1,22 +1,22 @@
 ## Cryptography---19CS412-classical-techqniques
 
-##  Exp 1 - Caeser Cipher using with different key values
+## Exp 2 - Playfair Cipher using with different key values
 
 ## AIM:
 
-To encrypt and decrypt the given message by using Ceaser Cipher encryption algorithm.
+To implement a program to encrypt a plain text and decrypt a cipher text using play fair Cipher substitution technique.
 
-## ALGORITHM :
+ALGORITHM :
 
-Step 1 : Read the plain text from the user.
+Step 1 : Read the plain text from the user
 
-Step 2 : Read the key value from the user
+Step 2 : Read the keyword from the user
 
-Step 3 : If the key is positive then encrypt the text by adding the key with each character in the plain text
+Step 3 : Arrange the keyword without duplicates in a 5*5 matrix in the row order and fill the remaining cells with missed out letters in alphabetical order. Note that ‘i’ and ‘j’ takes the same cell.
 
-Step 4 : Else subtract the key from the plain text.
+Step 4 : Group the plain text in pairs and match the corresponding corner letters by forming a rectangular grid.
 
-Step 5 : Display the cipher text obtained above.
+step 5 : Display the obtained cipher text
 
 ## PROGRAM:
 
@@ -24,69 +24,161 @@ Step 5 : Display the cipher text obtained above.
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#define SIZE 5
 
-int main() 
+void generateKeyTable(char key[], char keyTable[SIZE][SIZE]) 
 {
-    char plain[100], cipher[100];
-    int key, i, length;
-    
-    printf("Enter the plain text: ");
-    scanf("%s", plain);
-    printf("Enter the key value: ");
-    scanf("%d", &key);
+    int dicty[26] = {0};
+    int i, j, k = 0, len = strlen(key);
 
-    length = strlen(plain);
-    
-    // Encryption
-    printf("\nPLAIN TEXT: %s\n", plain);
-    printf("\nENCRYPTED TEXT: ");
-    
-    for (i = 0; i < length; i++) 
+
+    for (i = 0; i < len; i++) 
     {
-        if (isupper(plain[i])) 
+        if (key[i] != 'j' && dicty[key[i] - 'a'] == 0) 
         {
-            cipher[i] = (plain[i] - 'A' + key) % 26 + 'A';
-        } 
-        else if (islower(plain[i])) 
-        {
-            cipher[i] = (plain[i] - 'a' + key) % 26 + 'a';
+            keyTable[k / SIZE][k % SIZE] = key[i];
+            dicty[key[i] - 'a'] = 1;
+            k++;
         }
+    }
+
+
+    for (i = 0; i < 26; i++) 
+    {
+        if (i != 9 && dicty[i] == 0) 
+        { // skip 'j'
+            keyTable[k / SIZE][k % SIZE] = (char)(i + 'a');
+            k++;
+        }
+    }
+}
+
+void prepareText(char text[], char preparedText[]) 
+{
+    int i, j = 0, len = strlen(text);
+
+    for (i = 0; i < len; i++) 
+    {
+        text[i] = tolower(text[i]);
+        if (text[i] == 'j') 
+        {
+            text[i] = 'i';
+        }
+    }
+
+    for (i = 0; i < len; i++) 
+    {
+        if (isalpha(text[i])) 
+        {
+            preparedText[j++] = text[i];
+        }
+    }
+
+    preparedText[j] = '\0';
+
+
+    for (i = 0; i < j; i += 2) 
+    {
+        if (preparedText[i] == preparedText[i + 1]) 
+        {
+            memmove(preparedText + i + 2, preparedText + i + 1, j - i + 1);
+            preparedText[i + 1] = 'x';
+            j++;
+        }
+    }
+
+    if (strlen(preparedText) % 2 != 0) 
+    {
+        preparedText[j++] = 'x';
+        preparedText[j] = '\0';
+    }
+}
+
+void searchPosition(char keyTable[SIZE][SIZE], char a, char b, int pos[]) 
+{
+    int i, j;
+
+    if (a == 'j') a = 'i';
+    if (b == 'j') b = 'i';
+
+    for (i = 0; i < SIZE; i++) 
+    {
+        for (j = 0; j < SIZE; j++) 
+        {
+            if (keyTable[i][j] == a) 
+            {
+                pos[0] = i;
+                pos[1] = j;
+            }
+            if (keyTable[i][j] == b) 
+            {
+                pos[2] = i;
+                pos[3] = j;
+            }
+        }
+    }
+}
+
+void encryptOrDecrypt(char text[], char keyTable[SIZE][SIZE], int mode) 
+{
+    int i, pos[4], len = strlen(text);
+
+    for (i = 0; i < len; i += 2)
+    {
+        searchPosition(keyTable, text[i], text[i + 1], pos);
+        if (pos[0] == pos[2])
+        {
+            text[i] = keyTable[pos[0]][(pos[1] + mode + SIZE) % SIZE];
+            text[i + 1] = keyTable[pos[2]][(pos[3] + mode + SIZE) % SIZE];
+        } 
+        else if (pos[1] == pos[3]) 
+        {
+            text[i] = keyTable[(pos[0] + mode + SIZE) % SIZE][pos[1]];
+            text[i + 1] = keyTable[(pos[2] + mode + SIZE) % SIZE][pos[3]];
+        } 
         else 
         {
-            cipher[i] = plain[i]; // Handle non-alphabetic characters
+            text[i] = keyTable[pos[0]][pos[3]];
+            text[i + 1] = keyTable[pos[2]][pos[1]];
         }
-        printf("%c", cipher[i]);
     }
-    
-    cipher[length] = '\0'; // Null-terminate the cipher text string
-    // Decryption
-    printf("\n\nDECRYPTED TEXT: ");
-    for (i = 0; i < length; i++) 
+}
+
+int main()
+{
+    char key[30], text[100], preparedText[100], keyTable[SIZE][SIZE];
+    int choice;
+    printf("\nEnter the key: ");
+    gets(key);
+    generateKeyTable(key, keyTable);
+    printf("\nEnter the text: ");
+    gets(text);
+    prepareText(text, preparedText);
+    printf("\nEnter 1 to encrypt or 2 to decrypt: ");
+    scanf("%d", &choice);
+    if (choice == 1) 
     {
-        if (isupper(cipher[i])) 
-        {
-            plain[i] = (cipher[i] - 'A' - key + 26) % 26 + 'A';
-        } 
-        else if (islower(cipher[i])) 
-        {
-            plain[i] = (cipher[i] - 'a' - key + 26) % 26 + 'a';
-        } 
-        else 
-        {
-            plain[i] = cipher[i]; // Handle non-alphabetic characters
-        }
-        printf("%c", plain[i]);
+        encryptOrDecrypt(preparedText, keyTable, 1);  
+        printf("\nEncrypted text: %s\n", preparedText);
     }
-    plain[length] = '\0'; // Null-terminate the plain text string
+    else if (choice == 2) 
+    {
+        encryptOrDecrypt(preparedText, keyTable, -1); 
+        printf("\nDecrypted text: %s\n", preparedText);
+    } 
+    else 
+    {
+        printf("\nInvalid choice!\n");
+    }
+    printf("\nEnter 1 to encrypt or 2 to decrypt: ");
+    scanf("%d", &choice);
     return 0;
 }
 ```
 
 ## OUTPUT:
 
-Simulating Caesar Cipher
-
-![exp1output](https://github.com/user-attachments/assets/45813b0e-391d-4630-b9a7-0908b2d0782c)
+![exp2output](https://github.com/user-attachments/assets/8b24726a-5c65-401a-a4f2-af3eaacdeb95)
 
 ## RESULT:
-The program for Caesar Cipher is executed successfully.
+The program for Playfair Cipher is executed successfully.
