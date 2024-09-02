@@ -20,6 +20,7 @@ Step 5 : Display the cipher text obtained above.
 
 ## PROGRAM:
 
+```
 #include<stdio.h>
 #include <string.h>
 #include<conio.h>
@@ -56,6 +57,7 @@ printf("%c",plain[i]);
 }
 return 0;
 }
+```
 
 ## OUTPUT:
 
@@ -88,6 +90,7 @@ step 5 : Display the obtained cipher text
 
 ## PROGRAM:
 
+```
 #include<stdio.h>
 #include<conio.h>
 #include<string.h>
@@ -212,7 +215,8 @@ i++;
 }
 return 0;
 }
- 
+```
+
 ## OUTPUT:
 
 ![exp2output](https://github.com/user-attachments/assets/db8aef78-f884-4b14-8160-e94daba4a903)
@@ -243,6 +247,7 @@ Step 5 : Combine all these groups to get the complete cipher text.
 
 ## PROGRAM:
 
+```
 #include<stdio.h>
 #include<conio.h>
 #include<string.h>
@@ -287,6 +292,7 @@ printf(" %c",c[i]+65);
 getch();
 return 0;
 }
+```
 
 ## OUTPUT:
 
@@ -325,6 +331,7 @@ Step 8 : Repeat the above steps to generate the entire cipher text.
 
 ## PROGRAM:
 
+```
 #include <stdio.h>
 #include<conio.h>
 #include <ctype.h>
@@ -389,6 +396,7 @@ printf("%c",65 + (value % 26));
 }
 return 0;
 }
+```
 
 ## OUTPUT:
 
@@ -421,6 +429,7 @@ Step 5 : Read the characters row wise or column wise in the former order to get 
 
 ## PROGRAM:
 
+```
 #include<stdio.h>
 #include<conio.h>
 #include<string.h>
@@ -468,6 +477,7 @@ printf("\nText after decryption : ");
 printf("%s",d);
 return 0;
 }
+```
 
 ## OUTPUT:
 
