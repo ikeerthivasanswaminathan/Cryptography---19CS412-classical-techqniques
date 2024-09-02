@@ -111,7 +111,7 @@ Step 5 : Combine all these groups to get the complete cipher text.
 
 Simulating Hill Cipher
 
-![Uploading exp3output.png…]()
+![exp3output](https://github.com/user-attachments/assets/7bbe8e5b-234f-4c5c-9ab5-56d0b7e581d7)
 
 ## RESULT:
 The program for Hill Cipher is executed successfully.
