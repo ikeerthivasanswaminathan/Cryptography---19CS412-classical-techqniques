@@ -1,184 +1,117 @@
 ## Cryptography---19CS412-classical-techqniques
 
-## Exp 2 - Playfair Cipher using with different key values
+## Exp 3 - Hill Cipher using with different key values
 
 ## AIM:
 
-To implement a program to encrypt a plain text and decrypt a cipher text using play fair Cipher substitution technique.
+To develop a simple C program to implement Hill Cipher.
 
-ALGORITHM :
+## ALGORITHM :
 
-Step 1 : Read the plain text from the user
+Step 1 : Read the plain text and key from the user.
 
-Step 2 : Read the keyword from the user
+Step 2 : Split the plain text into groups of length three
 
-Step 3 : Arrange the keyword without duplicates in a 5*5 matrix in the row order and fill the remaining cells with missed out letters in alphabetical order. Note that ‘i’ and ‘j’ takes the same cell.
+Step 3 : Arrange the keyword in a 3*3 matrix.
 
-Step 4 : Group the plain text in pairs and match the corresponding corner letters by forming a rectangular grid.
+Step 4 : Multiply the two matrices to obtain the cipher text of length three.
 
-step 5 : Display the obtained cipher text
+Step 5 : Combine all these groups to get the complete cipher text.
 
 ## PROGRAM:
 
 ```
 #include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#define SIZE 5
-
-void generateKeyTable(char key[], char keyTable[SIZE][SIZE]) 
-{
-    int dicty[26] = {0};
-    int i, j, k = 0, len = strlen(key);
-
-
-    for (i = 0; i < len; i++) 
+ #include <string.h>
+ #include <ctype.h>  // Include the necessary header for toupper()
+ int keymat[3][3] = { { 1, 2, 1 }, { 2, 3, 2 }, { 2, 2, 1 } };
+ int invkeymat[3][3] = { { -1, 0, 1 }, { 2, -1, 0 }, { -2, 2, -1 } };
+ char key[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+ void encode(char a, char b, char c, char ret[4]) 
+ {
+    int x, y, z;
+    int posa = (int) a - 65;
+    int posb = (int) b - 65;
+    int posc = (int) c - 65;
+    
+    x = posa * keymat[0][0] + posb * keymat[1][0] + posc * keymat[2][0];
+    y = posa * keymat[0][1] + posb * keymat[1][1] + posc * keymat[2][1];
+    z = posa * keymat[0][2] + posb * keymat[1][2] + posc * keymat[2][2];
+    
+    ret[0] = key[(x % 26 + 26) % 26];
+    ret[1] = key[(y % 26 + 26) % 26];
+    ret[2] = key[(z % 26 + 26) % 26];
+    ret[3] = '\0';
+ }
+ void decode(char a, char b, char c, char ret[4]) 
+ {
+    int x, y, z;
+    int posa = (int) a - 65;
+    int posb = (int) b - 65;
+    int posc = (int) c - 65;
+    
+    x = posa * invkeymat[0][0] + posb * invkeymat[1][0] + posc * invkeymat[2][0];
+    y = posa * invkeymat[0][1] + posb * invkeymat[1][1] + posc * invkeymat[2][1];
+    z = posa * invkeymat[0][2] + posb * invkeymat[1][2] + posc * invkeymat[2][2];
+    ret[0] = key[(x % 26 + 26) % 26];
+    ret[1] = key[(y % 26 + 26) % 26];
+    ret[2] = key[(z % 26 + 26) % 26];
+    ret[3] = '\0';
+ }
+ 
+ int main() 
+ {
+    char msg[1000];
+    char enc[1000] = "";
+    char dec[1000] = "";
+    int n;
+    strcpy(msg, "KEERTHIVASAN");
+    printf("Simulation of Hill Cipher\n");
+    printf("\nInput message : %s\n", msg);
+    for (int i = 0; i < strlen(msg); i++) 
     {
-        if (key[i] != 'j' && dicty[key[i] - 'a'] == 0) 
+        msg[i] = toupper(msg[i]);
+    }
+    // Remove spaces
+    n = strlen(msg) % 3;
+    // Append padding text X
+    if (n != 0) 
+    {
+        for (int i = 1; i <= (3 - n); i++) 
         {
-            keyTable[k / SIZE][k % SIZE] = key[i];
-            dicty[key[i] - 'a'] = 1;
-            k++;
+            strcat(msg, "X");
         }
     }
-
-
-    for (i = 0; i < 26; i++) 
+    printf("\nPadded message : %s\n", msg);
+    for (int i = 0; i < strlen(msg); i += 3) 
     {
-        if (i != 9 && dicty[i] == 0) 
-        { // skip 'j'
-            keyTable[k / SIZE][k % SIZE] = (char)(i + 'a');
-            k++;
-        }
+        char a = msg[i];
+        char b = msg[i + 1];
+        char c = msg[i + 2];
+        char ret[4];
+        encode(a, b, c, ret);
+        strcat(enc, ret);
     }
-}
-
-void prepareText(char text[], char preparedText[]) 
-{
-    int i, j = 0, len = strlen(text);
-
-    for (i = 0; i < len; i++) 
+    printf("\nEncoded message : %s\n", enc);
+    for (int i = 0; i < strlen(enc); i += 3)
     {
-        text[i] = tolower(text[i]);
-        if (text[i] == 'j') 
-        {
-            text[i] = 'i';
-        }
+        char a = enc[i];
+        char b = enc[i + 1];
+        char c = enc[i + 2];
+        char ret[4];
+        decode(a, b, c, ret);
+        strcat(dec, ret);
     }
-
-    for (i = 0; i < len; i++) 
-    {
-        if (isalpha(text[i])) 
-        {
-            preparedText[j++] = text[i];
-        }
-    }
-
-    preparedText[j] = '\0';
-
-
-    for (i = 0; i < j; i += 2) 
-    {
-        if (preparedText[i] == preparedText[i + 1]) 
-        {
-            memmove(preparedText + i + 2, preparedText + i + 1, j - i + 1);
-            preparedText[i + 1] = 'x';
-            j++;
-        }
-    }
-
-    if (strlen(preparedText) % 2 != 0) 
-    {
-        preparedText[j++] = 'x';
-        preparedText[j] = '\0';
-    }
-}
-
-void searchPosition(char keyTable[SIZE][SIZE], char a, char b, int pos[]) 
-{
-    int i, j;
-
-    if (a == 'j') a = 'i';
-    if (b == 'j') b = 'i';
-
-    for (i = 0; i < SIZE; i++) 
-    {
-        for (j = 0; j < SIZE; j++) 
-        {
-            if (keyTable[i][j] == a) 
-            {
-                pos[0] = i;
-                pos[1] = j;
-            }
-            if (keyTable[i][j] == b) 
-            {
-                pos[2] = i;
-                pos[3] = j;
-            }
-        }
-    }
-}
-
-void encryptOrDecrypt(char text[], char keyTable[SIZE][SIZE], int mode) 
-{
-    int i, pos[4], len = strlen(text);
-
-    for (i = 0; i < len; i += 2)
-    {
-        searchPosition(keyTable, text[i], text[i + 1], pos);
-        if (pos[0] == pos[2])
-        {
-            text[i] = keyTable[pos[0]][(pos[1] + mode + SIZE) % SIZE];
-            text[i + 1] = keyTable[pos[2]][(pos[3] + mode + SIZE) % SIZE];
-        } 
-        else if (pos[1] == pos[3]) 
-        {
-            text[i] = keyTable[(pos[0] + mode + SIZE) % SIZE][pos[1]];
-            text[i + 1] = keyTable[(pos[2] + mode + SIZE) % SIZE][pos[3]];
-        } 
-        else 
-        {
-            text[i] = keyTable[pos[0]][pos[3]];
-            text[i + 1] = keyTable[pos[2]][pos[1]];
-        }
-    }
-}
-
-int main()
-{
-    char key[30], text[100], preparedText[100], keyTable[SIZE][SIZE];
-    int choice;
-    printf("\nEnter the key: ");
-    gets(key);
-    generateKeyTable(key, keyTable);
-    printf("\nEnter the text: ");
-    gets(text);
-    prepareText(text, preparedText);
-    printf("\nEnter 1 to encrypt or 2 to decrypt: ");
-    scanf("%d", &choice);
-    if (choice == 1) 
-    {
-        encryptOrDecrypt(preparedText, keyTable, 1);  
-        printf("\nEncrypted text: %s\n", preparedText);
-    }
-    else if (choice == 2) 
-    {
-        encryptOrDecrypt(preparedText, keyTable, -1); 
-        printf("\nDecrypted text: %s\n", preparedText);
-    } 
-    else 
-    {
-        printf("\nInvalid choice!\n");
-    }
-    printf("\nEnter 1 to encrypt or 2 to decrypt: ");
-    scanf("%d", &choice);
+    printf("\nDecoded message : %s\n", dec);    
     return 0;
-}
+ }
 ```
 
 ## OUTPUT:
 
-![exp2output](https://github.com/user-attachments/assets/8b24726a-5c65-401a-a4f2-af3eaacdeb95)
+Simulating Hill Cipher
+
+![Uploading exp3output.png…]()
 
 ## RESULT:
-The program for Playfair Cipher is executed successfully.
+The program for Hill Cipher is executed successfully.
