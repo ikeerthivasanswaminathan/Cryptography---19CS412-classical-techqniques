@@ -1,117 +1,104 @@
 ## Cryptography---19CS412-classical-techqniques
 
-## Exp 3 - Hill Cipher using with different key values
+## Exp 4 - Vigenere Cipher using with different key values
 
 ## AIM:
 
-To develop a simple C program to implement Hill Cipher.
+To develop a simple C program to implement Vigenere Cipher.
 
 ## ALGORITHM :
 
-Step 1 : Read the plain text and key from the user.
+Step 1 : Arrange the alphabets in row and column of a 26*26 matrix
 
-Step 2 : Split the plain text into groups of length three
+Step 2 : Circulate the alphabets in each row to position left such that the first letter is attached to last.
 
-Step 3 : Arrange the keyword in a 3*3 matrix.
+Step 3 : Repeat this process for all 26 rows and construct the final key matrix.
 
-Step 4 : Multiply the two matrices to obtain the cipher text of length three.
+Step 4 : The keyword and the plain text is read from the user.
 
-Step 5 : Combine all these groups to get the complete cipher text.
+Step 5 : The characters in the keyword are repeated sequentially so as to match with that of the plain text.
+
+Step 6 : Pick the first letter of the plain text and that of the keyword as the row indices and column indices respectively.
+
+Step 7 : The junction character where these two meet forms the cipher character
+
+Step 8 : Repeat the above steps to generate the entire cipher text.
 
 ## PROGRAM:
 
 ```
 #include <stdio.h>
- #include <string.h>
- #include <ctype.h>  // Include the necessary header for toupper()
- int keymat[3][3] = { { 1, 2, 1 }, { 2, 3, 2 }, { 2, 2, 1 } };
- int invkeymat[3][3] = { { -1, 0, 1 }, { 2, -1, 0 }, { -2, 2, -1 } };
- char key[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
- void encode(char a, char b, char c, char ret[4]) 
- {
-    int x, y, z;
-    int posa = (int) a - 65;
-    int posb = (int) b - 65;
-    int posc = (int) c - 65;
-    
-    x = posa * keymat[0][0] + posb * keymat[1][0] + posc * keymat[2][0];
-    y = posa * keymat[0][1] + posb * keymat[1][1] + posc * keymat[2][1];
-    z = posa * keymat[0][2] + posb * keymat[1][2] + posc * keymat[2][2];
-    
-    ret[0] = key[(x % 26 + 26) % 26];
-    ret[1] = key[(y % 26 + 26) % 26];
-    ret[2] = key[(z % 26 + 26) % 26];
-    ret[3] = '\0';
- }
- void decode(char a, char b, char c, char ret[4]) 
- {
-    int x, y, z;
-    int posa = (int) a - 65;
-    int posb = (int) b - 65;
-    int posc = (int) c - 65;
-    
-    x = posa * invkeymat[0][0] + posb * invkeymat[1][0] + posc * invkeymat[2][0];
-    y = posa * invkeymat[0][1] + posb * invkeymat[1][1] + posc * invkeymat[2][1];
-    z = posa * invkeymat[0][2] + posb * invkeymat[1][2] + posc * invkeymat[2][2];
-    ret[0] = key[(x % 26 + 26) % 26];
-    ret[1] = key[(y % 26 + 26) % 26];
-    ret[2] = key[(z % 26 + 26) % 26];
-    ret[3] = '\0';
- }
- 
- int main() 
- {
-    char msg[1000];
-    char enc[1000] = "";
-    char dec[1000] = "";
-    int n;
-    strcpy(msg, "KEERTHIVASAN");
-    printf("Simulation of Hill Cipher\n");
-    printf("\nInput message : %s\n", msg);
-    for (int i = 0; i < strlen(msg); i++) 
+#include<conio.h>
+#include <ctype.h>
+#include <string.h>
+void encipher();
+void decipher();
+int main()
+{
+    int choice;
+    while(1)
     {
-        msg[i] = toupper(msg[i]);
+        printf("\n\n1. Encrypt Text");
+        printf("\n2. Decrypt Text");
+        printf("\n3. Exit");
+        printf("\n\nEnter Your Choice : ");
+        scanf("%d",&choice);
+        if(choice == 3)
+        exit(0);
+        else if(choice == 1)
+        encipher();
+        else if(choice == 2)
+        decipher();
+        else
+        printf("Please Enter Valid Option.");
     }
-    // Remove spaces
-    n = strlen(msg) % 3;
-    // Append padding text X
-    if (n != 0) 
+}
+void encipher()
+{
+    unsigned int i,j;
+    char input[50],key[10];
+    printf("\nEnter Plain Text: ");
+    scanf("%s",input);
+    printf("\nEnter Key Value: ");
+    scanf("%s",key);
+    printf("\nResultant Cipher Text: ");
+    for(i=0,j=0;i<strlen(input);i++,j++)
     {
-        for (int i = 1; i <= (3 - n); i++) 
-        {
-            strcat(msg, "X");
-        }
+        if(j>=strlen(key)){ j=0;
     }
-    printf("\nPadded message : %s\n", msg);
-    for (int i = 0; i < strlen(msg); i += 3) 
+    printf("%c",65+(((toupper(input[i])-65)+(toupper(key[j])-65))%26));
+    }
+}
+void decipher()
+{
+    unsigned int i,j;
+    char input[50],key[10];
+    int value;
+    printf("\nEnter Cipher Text: ");
+    scanf("%s",input);
+    printf("\nEnter the key value: ");
+    scanf("%s",key);
+    printf("\n");
+    for(i=0,j=0;i<strlen(input);i++,j++)
     {
-        char a = msg[i];
-        char b = msg[i + 1];
-        char c = msg[i + 2];
-        char ret[4];
-        encode(a, b, c, ret);
-        strcat(enc, ret);
+        if(j>=strlen(key)){ j=0; 
     }
-    printf("\nEncoded message : %s\n", enc);
-    for (int i = 0; i < strlen(enc); i += 3)
-    {
-        char a = enc[i];
-        char b = enc[i + 1];
-        char c = enc[i + 2];
-        char ret[4];
-        decode(a, b, c, ret);
-        strcat(dec, ret);
+    value = (toupper(input[i])-64)-(toupper(key[j])-64);
+    if( value < 0)
+    { 
+        value = value * -1;
     }
-    printf("\nDecoded message : %s\n", dec);    
+    printf("%c",65 + (value % 26));
+    }
     return 0;
- }
+}
 ```
 
 ## OUTPUT:
 
-Simulating Hill Cipher
+Simulating Vigenere Cipher
 
-![exp3output](https://github.com/user-attachments/assets/7bbe8e5b-234f-4c5c-9ab5-56d0b7e581d7)
+![exp4output](https://github.com/user-attachments/assets/89944c78-ad64-48db-b5f7-5dd04e94927d)
 
 ## RESULT:
-The program for Hill Cipher is executed successfully.
+The program for Vigenere Cipher is executed successfully.
